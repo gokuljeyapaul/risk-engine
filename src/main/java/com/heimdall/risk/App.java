@@ -12,9 +12,9 @@ import com.heimdall.risk.request.processor.DecisionRequestProcessor;
 public class App {
 	public static void main(String[] args) {
 		port(9000);
-		post("/decision", "application/json", (request, response) -> {
+		post("/v1/decision", "application/json", (request, response) -> {
 			return DecisionRequestProcessor.newInstance()
-							.processDecisionRequest(request, response).body();
+					.processDecisionRequest(request, response).body();
 		});
 
 	}
