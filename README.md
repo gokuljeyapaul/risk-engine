@@ -22,6 +22,10 @@ mvn idea:idea
 ```
 - Import the project into the IDE
 
+##### Steps to run the project #####
+- To run the project from the IDE, just run `App.java` from the IDE.
+- The `pom.xml` packages the project to a `jar` with meta information of the main class. Hence running the jar file from console will work too.
+
 
 ##### Documentation #####
 - [Assumptions] (https://github.com/gokuljeyapaul/risk-engine/blob/master/docs/assumptions.md)
