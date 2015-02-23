@@ -65,7 +65,7 @@ public class DecisionRequestValidator {
 
 		final DoubleValidator doubleValidator = DoubleValidator.getInstance();
 		if (!doubleValidator.isValid(String.valueOf(transactionInfo.amount
-				.get()))) {
+				.get())) || (transactionInfo.amount.get() <= 0)) {
 			throw new ValidatorException("Invalid amount");
 		}
 		if (!doubleValidator.maxValue(transactionInfo.amount.get(), 1000)) {

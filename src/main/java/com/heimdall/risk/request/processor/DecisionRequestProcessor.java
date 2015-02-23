@@ -58,9 +58,9 @@ public class DecisionRequestProcessor {
 		final Map<String, String> responseMap = new LinkedHashMap<String, String>();
 		final Gson gson = new GsonBuilder().registerTypeAdapter(
 				TransactionInfo.class, new TransactionInfoBinder()).create();
+		final TransactionRules transactionRules = new TransactionRules();
+		Integer id = 0;
 		try {
-			final TransactionRules transactionRules = new TransactionRules();
-			Integer id = 0;
 			final TransactionInfo currentTransactionInfo = gson.fromJson(
 					request.body(), TransactionInfo.class);
 			final boolean isValidRequest = DecisionRequestValidator
@@ -68,14 +68,12 @@ public class DecisionRequestProcessor {
 			if (isValidRequest
 					&& transactionRules
 					.isSuspiciousTransaction(currentTransactionInfo)) {
-				this.logger.info("Inside if");
 				currentTransactionInfo.status.set(TransactionStatus.SUCCESS);
 				id = DataStoreFactory.getDataStore(TransactionDataStore.TYPE)
 						.saveOrUpdate(currentTransactionInfo);
 				responseMap.put("accepted", String.valueOf(true));
 				responseMap.put("reason", "ok");
 			} else {
-				this.logger.info("Inside else");
 				currentTransactionInfo.status.set(TransactionStatus.BLOCKED);
 				id = DataStoreFactory.getDataStore(TransactionDataStore.TYPE)
 						.saveOrUpdate(currentTransactionInfo);
@@ -87,17 +85,19 @@ public class DecisionRequestProcessor {
 			response.body(gson.toJson(responseMap));
 			return response;
 		} catch (ValidatorException | JsonSyntaxException e) {
+			this.logger.error(e.getMessage());
 			e.printStackTrace();
 			responseMap.put("accepted", String.valueOf(false));
-			responseMap.put("reason", e.getMessage());
+			responseMap.put("reason", "Invalid input");
 			response.status(200);
 			response.type("application/json");
 			response.body(gson.toJson(responseMap));
 			return response;
 		} catch (final Exception e) {
+			this.logger.error(e.getMessage());
 			e.printStackTrace();
 			responseMap.put("accepted", String.valueOf(false));
-			responseMap.put("reason", e.getMessage());
+			responseMap.put("reason", "Unexpected error");
 			response.status(500);
 			response.type("application/json");
 			response.body(gson.toJson(responseMap));

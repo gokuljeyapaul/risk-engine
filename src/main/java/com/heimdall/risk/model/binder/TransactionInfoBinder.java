@@ -39,12 +39,17 @@ public class TransactionInfoBinder implements JsonSerializer<TransactionInfo>,
 
 		final JsonObject jsonObject = json.getAsJsonObject();
 		final TransactionInfo info = new TransactionInfo();
-		info.email.set(jsonObject.get("email").getAsString());
-		info.firstName.set(jsonObject.get("first_name").getAsString());
-		info.lastName.set(jsonObject.get("last_name").getAsString());
-		info.amount.set(jsonObject.get("amount").getAsDouble());
+		try {
+			info.email.set(jsonObject.get("email").getAsString());
+			info.firstName.set(jsonObject.get("first_name").getAsString());
+			info.lastName.set(jsonObject.get("last_name").getAsString());
+			info.amount.set(jsonObject.get("amount").getAsDouble());
+		} catch (final NumberFormatException e) {
+			throw new JsonParseException("Invalid amount");
+		} catch (final Exception e) {
+			throw new JsonParseException("Invalid input");
+		}
 
 		return info;
 	}
-
 }
