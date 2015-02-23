@@ -6,6 +6,12 @@ package com.heimdall.risk.store;
  */
 public class DataStoreFactory {
 
+	/**
+	 * Data store factory
+	 *
+	 * @param type
+	 * @return DataStore
+	 */
 	public static DataStore getDataStore(String type) {
 		switch (type) {
 		case TransactionDataStore.TYPE:

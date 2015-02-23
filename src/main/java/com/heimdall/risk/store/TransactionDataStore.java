@@ -7,8 +7,8 @@ import com.heimdall.risk.model.Model;
 import com.heimdall.risk.model.TransactionInfo;
 
 /**
- * A simple in memory data store for processing transactions. 
- * CAUTION : All data is lost during restarts
+ * A simple in memory data store for processing transactions. CAUTION : All data
+ * is lost during restarts
  *
  */
 public final class TransactionDataStore implements DataStore {
@@ -40,7 +40,7 @@ public final class TransactionDataStore implements DataStore {
 	}
 
 	@Override
-	public Integer saveOrUpdate(Model model) {
+	public synchronized Integer saveOrUpdate(Model model) {
 		final TransactionInfo requestModel = (TransactionInfo) model;
 		if (_store.containsKey(model.hashCode())) {
 			final TransactionInfo storedModel = (TransactionInfo) _store
@@ -54,12 +54,12 @@ public final class TransactionDataStore implements DataStore {
 	}
 
 	@Override
-	public <T extends Model> T read(Integer id) {
+	public synchronized <T extends Model> T read(Integer id) {
 		return (T) _store.get(id);
 	}
 
 	@Override
-	public boolean delete(Integer id) {
+	public synchronized boolean delete(Integer id) {
 		if (_store.containsKey(id)) {
 			_store.remove(id);
 			return true;

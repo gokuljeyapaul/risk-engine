@@ -12,14 +12,30 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
  */
 public class TransactionInfo implements Model {
 
+	/**
+	 * Email of the customer, assumed as the main reference(unique) for the
+	 * transaction.
+	 */
 	public Property<String> email = new Property<String>();
 
+	/**
+	 * First name of the customer
+	 */
 	public Property<String> firstName = new Property<String>();
 
+	/**
+	 * Last name of the customer
+	 */
 	public Property<String> lastName = new Property<String>();
 
+	/**
+	 * Current transaction amount
+	 */
 	public Property<Double> amount = new Property<Double>();
 
+	/**
+	 * Internal status of the transaction
+	 */
 	public Property<TransactionStatus> status = new Property<TransactionStatus>();
 
 	public TransactionInfo() {
@@ -28,10 +44,7 @@ public class TransactionInfo implements Model {
 
 	@Override
 	public int hashCode() {
-		return new HashCodeBuilder().append(this.email.get())
-		// .append(this.firstName.get())
-		// .append(this.lastName.get())
-				.toHashCode();
+		return new HashCodeBuilder().append(this.email.get()).toHashCode();
 	}
 
 	@Override
@@ -39,10 +52,7 @@ public class TransactionInfo implements Model {
 		if (object instanceof TransactionInfo) {
 			final TransactionInfo info = (TransactionInfo) object;
 			return new EqualsBuilder().append(info.email.get(),
-					this.email.get())
-					// .append(info.firstName.get(), this.firstName.get())
-					// .append(info.lastName.get(), this.lastName.get())
-					.isEquals();
+					this.email.get()).isEquals();
 		}
 		return false;
 	}

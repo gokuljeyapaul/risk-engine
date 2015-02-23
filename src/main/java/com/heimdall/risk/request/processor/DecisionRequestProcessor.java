@@ -24,17 +24,35 @@ import com.heimdall.risk.store.TransactionDataStore;
  */
 public class DecisionRequestProcessor {
 
+	/**
+	 * Logger instance
+	 */
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+	/**
+	 * Private constructor so no one instantiates this class
+	 */
 	private DecisionRequestProcessor() {
 
 	}
 
+	/**
+	 * Factory method
+	 *
+	 * @return DecisionRequestProcessor
+	 */
 	public static DecisionRequestProcessor newInstance() {
 		System.setProperty("org.mortbay.log.class", "spark.JettyLogger");
 		return new DecisionRequestProcessor();
 	}
 
+	/**
+	 * Process the decision request and respond
+	 *
+	 * @param request
+	 * @param response
+	 * @return response
+	 */
 	public synchronized spark.Response processDecisionRequest(
 			spark.Request request, spark.Response response) {
 		final Map<String, String> responseMap = new LinkedHashMap<String, String>();
@@ -49,7 +67,7 @@ public class DecisionRequestProcessor {
 					.newInstance().isValidRequest(currentTransactionInfo);
 			if (isValidRequest
 					&& transactionRules
-							.isSafeTransaction(currentTransactionInfo)) {
+					.isSuspiciousTransaction(currentTransactionInfo)) {
 				this.logger.info("Inside if");
 				currentTransactionInfo.status.set(TransactionStatus.SUCCESS);
 				id = DataStoreFactory.getDataStore(TransactionDataStore.TYPE)

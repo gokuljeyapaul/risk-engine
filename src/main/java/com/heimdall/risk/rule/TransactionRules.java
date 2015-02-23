@@ -12,26 +12,16 @@ import com.heimdall.risk.store.TransactionDataStore;
  */
 public class TransactionRules {
 
+	/**
+	 * Max threshold amount
+	 */
 	private static Double maxAmountThreshold = 1000.00;
 
+	/**
+	 * Min threshold amount. Not used anywhere as of now. But can be used if we
+	 * want a stingy rate limit on each transaction
+	 */
 	private static Double minAmountThreshold = 10.00;
-
-	private final synchronized boolean isSafeAmount(
-			TransactionInfo currentTransactionInfo,
-			TransactionInfo historyTransactionInfo) {
-		return (!historyTransactionInfo.status.get().equals(
-				TransactionStatus.BLOCKED))
-				&& (!historyTransactionInfo.status.get().equals(
-						TransactionStatus.REVIEW))
-						/*
-						 * && (currentTransactionInfo.amount.get() <=
-						 * minAmountThreshold)
-						 */
-						&& (currentTransactionInfo.amount.get() <= maxAmountThreshold)
-						&& (historyTransactionInfo.amount.get() <= maxAmountThreshold)
-						&& ((currentTransactionInfo.amount.get() + historyTransactionInfo.amount
-								.get()) <= maxAmountThreshold);
-	}
 
 	private final synchronized boolean isSuspectedAmount(
 			TransactionInfo currentTransactionInfo,
@@ -39,35 +29,27 @@ public class TransactionRules {
 		return ((historyTransactionInfo.status.get()
 				.equals(TransactionStatus.BLOCKED)) || (historyTransactionInfo.status
 						.get().equals(TransactionStatus.REVIEW)))
-						/*
-						 * && ((currentTransactionInfo.amount.get() >=
-						 * minAmountThreshold) || (currentTransactionInfo.amount .get()
-						 * >= maxAmountThreshold))
-						 */
-						&& (historyTransactionInfo.amount.get() >= maxAmountThreshold)
-						&& ((currentTransactionInfo.amount.get() + historyTransactionInfo.amount
-								.get()) > maxAmountThreshold);
+						|| ((historyTransactionInfo.amount.get() >= maxAmountThreshold) || ((currentTransactionInfo.amount
+						.get() + historyTransactionInfo.amount.get()) > maxAmountThreshold));
 	}
 
-	private final synchronized boolean isNewTransactionSafeAmount(
+	private final synchronized boolean isNewTransactionSuspectedAmount(
 			TransactionInfo currentTransactionInfo) {
-		return (currentTransactionInfo.amount.get() <= maxAmountThreshold);
+		return (currentTransactionInfo.amount.get() > maxAmountThreshold);
 	}
 
-	public synchronized boolean isSafeTransaction(
+	public synchronized boolean isSuspiciousTransaction(
 			TransactionInfo currentTransactionInfo) {
 		final DataStore dataStore = DataStoreFactory
 				.getDataStore(TransactionDataStore.TYPE);
 		final TransactionInfo historyTransactionInfo = dataStore
 				.read(currentTransactionInfo.hashCode());
 		if (historyTransactionInfo == null) {
-			return this.isNewTransactionSafeAmount(currentTransactionInfo);
+			return !this
+					.isNewTransactionSuspectedAmount(currentTransactionInfo);
 		} else {
-			final boolean isSuspicious = this.isSuspectedAmount(
-					currentTransactionInfo, historyTransactionInfo);
-			final boolean isSafe = this.isSafeAmount(currentTransactionInfo,
+			return !this.isSuspectedAmount(currentTransactionInfo,
 					historyTransactionInfo);
-			return isSuspicious ? false : isSafe;
 		}
 	}
 
