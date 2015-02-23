@@ -13,3 +13,4 @@
 - No [JSR-94](https://jcp.org/en/jsr/detail?id=94) standard or industry standard rule-engine has been used for this project as the rules were simple and a full fledged rule engine will be an overkill.
 - All logs have been removed to provide clarity for review.
 - The project is developed with multiple threads in mind.
+- The end point has been prefixed with version ahead of it - `http://localhost:9000/v1/decision` to support backward compatibility.
